@@ -1,0 +1,209 @@
+{
+	"width": 720,
+	"height": 720,
+	"fps": 30,
+	"main": "./script/bundle.js",
+	"assets": {
+		"bundle": {
+			"type": "script",
+			"path": "script/bundle.js",
+			"global": true
+		},
+		"assets/ui/arrow-down.png": {
+			"type": "image",
+			"path": "assets/ui/arrow-down.png",
+			"width": 55,
+			"height": 41
+		},
+		"assets/ui/arrow-left.png": {
+			"type": "image",
+			"path": "assets/ui/arrow-left.png",
+			"width": 89,
+			"height": 26
+		},
+		"assets/ui/arrow-right.png": {
+			"type": "image",
+			"path": "assets/ui/arrow-right.png",
+			"width": 90,
+			"height": 26
+		},
+		"assets/ui/arrow-up.png": {
+			"type": "image",
+			"path": "assets/ui/arrow-up.png",
+			"width": 55,
+			"height": 41
+		},
+		"assets/ui/rotate-ccw.png": {
+			"type": "image",
+			"path": "assets/ui/rotate-ccw.png",
+			"width": 144,
+			"height": 72
+		},
+		"assets/ui/rotate-cw.png": {
+			"type": "image",
+			"path": "assets/ui/rotate-cw.png",
+			"width": 144,
+			"height": 72
+		},
+		"assets/sound/se_gameover": {
+			"type": "audio",
+			"path": "assets/sound/se_gameover",
+			"systemId": "sound",
+			"duration": 1463,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"assets/sound/se_harddrop": {
+			"type": "audio",
+			"path": "assets/sound/se_harddrop",
+			"systemId": "sound",
+			"duration": 262,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"assets/sound/se_rotate": {
+			"type": "audio",
+			"path": "assets/sound/se_rotate",
+			"systemId": "sound",
+			"duration": 497,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"assets/sound/se_score": {
+			"type": "audio",
+			"path": "assets/sound/se_score",
+			"systemId": "sound",
+			"duration": 360,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"assets/sound/se_win": {
+			"type": "audio",
+			"path": "assets/sound/se_win",
+			"systemId": "sound",
+			"duration": 3475,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"assets/sound/se_gameover.mp3": {
+			"type": "binary",
+			"path": "assets/sound/se_gameover.mp3"
+		},
+		"assets/sound/convert.bat": {
+			"type": "text",
+			"path": "assets/sound/convert.bat"
+		},
+		"assets/sound/se_click": {
+			"type": "audio",
+			"path": "assets/sound/se_click",
+			"systemId": "sound",
+			"duration": 157,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"assets/sound/mp3/se_click.mp3": {
+			"type": "binary",
+			"path": "assets/sound/mp3/se_click.mp3"
+		},
+		"assets/sound/mp3/se_gameover.mp3": {
+			"type": "binary",
+			"path": "assets/sound/mp3/se_gameover.mp3"
+		},
+		"assets/sound/mp3/se_harddrop.mp3": {
+			"type": "binary",
+			"path": "assets/sound/mp3/se_harddrop.mp3"
+		},
+		"assets/sound/mp3/se_rotate.mp3": {
+			"type": "binary",
+			"path": "assets/sound/mp3/se_rotate.mp3"
+		},
+		"assets/sound/mp3/se_score.mp3": {
+			"type": "binary",
+			"path": "assets/sound/mp3/se_score.mp3"
+		},
+		"assets/sound/mp3/se_win.mp3": {
+			"type": "binary",
+			"path": "assets/sound/mp3/se_win.mp3"
+		},
+		"assets/background.png": {
+			"type": "image",
+			"path": "assets/background.png",
+			"width": 1024,
+			"height": 1024
+		},
+		"assets/ui/background-button.png": {
+			"type": "image",
+			"path": "assets/ui/background-button.png",
+			"width": 256,
+			"height": 68
+		},
+		"assets/tank.png": {
+			"type": "image",
+			"path": "assets/tank.png",
+			"width": 328,
+			"height": 642
+		},
+		"assets/zombies/zombie-green.png": {
+			"type": "image",
+			"path": "assets/zombies/zombie-green.png",
+			"width": 609,
+			"height": 407
+		},
+		"assets/zombies/zombie-red.png": {
+			"type": "image",
+			"path": "assets/zombies/zombie-red.png",
+			"width": 609,
+			"height": 407
+		},
+		"assets/zombies/zombie-yellow.png": {
+			"type": "image",
+			"path": "assets/zombies/zombie-yellow.png",
+			"width": 609,
+			"height": 407
+		},
+		"assets/zombies/zombie.psd": {
+			"type": "binary",
+			"path": "assets/zombies/zombie.psd"
+		}
+	},
+	"moduleMainScripts": {},
+	"environment": {
+		"sandbox-runtime": "3",
+		"akashic-runtime": {
+			"version": "~3.7.0-0",
+			"flavor": "-canvas"
+		},
+		"nicolive": {
+			"supportedModes": [
+				"single",
+				"multi"
+			]
+		}
+	},
+	"globalScripts": [],
+	"defaultLoadingScene": "none"
+}

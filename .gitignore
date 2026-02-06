@@ -1,0 +1,8 @@
+node_modules
+/script
+coverage
+game.zip
+/.vs
+/tmp
+/asset-source
+/bk
