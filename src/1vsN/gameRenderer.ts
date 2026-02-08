@@ -88,7 +88,9 @@ export class gameRenderer {
 		if (this.bossView) this.bossView.reset();
 	}
 
-	update() {
+	update(isSkipping: boolean = false) {
+		if (isSkipping) return;
+
 		// Update Timer Bar
 		const maxW = g.game.width - 20;
 		const ratio = Math.max(0, this.controller.remainingTime / this.controller.maxTime);
@@ -126,7 +128,7 @@ export class gameRenderer {
 					let view = new zombieView(this.scene, zombie);
 					this.zombieMap.set(zombie, view);
 					if (this.bossView) {
-						view.lookAt(this.bossView.model.x, this.bossView.model.x);
+						view.lookAt(this.bossView.model.x, this.bossView.model.y);
 					}
 				}
 				this.zombieMap.get(zombie)?.update();
@@ -155,6 +157,15 @@ export class gameRenderer {
 			if (!activeBullets.has(model)) {
 				view.destroy();
 				this.bulletMap.delete(model);
+			}
+		});
+
+		// Cleanup labels for removed players
+		const activePlayerIds = new Set(this.controller.enemyPlayers.keys());
+		this.playerStatusMap.forEach((label, id) => {
+			if (!activePlayerIds.has(id)) {
+				label.destroy();
+				this.playerStatusMap.delete(id);
 			}
 		});
 
