@@ -11,7 +11,9 @@ export interface MainSceneParameterObject extends g.SceneParameterObject {
 export class clientScene extends g.Scene {
 	private _initialSnapshot: any;
 	private gController: gameController
+	private gRenderer: gameRenderer;
 	private client: NetworkClient;
+	private restartBtn: g.E;
 
 	private imgUrls = [
 		"/assets/zombies/zombie-green.png",
@@ -59,6 +61,12 @@ export class clientScene extends g.Scene {
 			})
 		});
 
+		this.client.on("restart_game").add(() => {
+			if (this.gController) this.gController.reset();
+			if (this.gRenderer) this.gRenderer.reset();
+			if (this.restartBtn) this.restartBtn.hide();
+		});
+
 		this.sendJoin();
 	}
 
@@ -87,9 +95,14 @@ export class clientScene extends g.Scene {
 		}
 
 		this.gController = new gameController(bossId, g.game.width, g.game.height, g.game.selfId);
-		const gRenderer = new gameRenderer(this, this.gController);
+		this.gRenderer = new gameRenderer(this, this.gController);
+
+		this.createRestartButton();
 
 		this.onPointDownCapture.add((ev) => {
+			// Ignore if clicking restart button
+			if (this.restartBtn && this.restartBtn.visible()) return;
+
 			const playerId = ev.player.id
 			this.gController.handleInput(playerId, ev.point.x, ev.point.y);
 		});
@@ -97,7 +110,70 @@ export class clientScene extends g.Scene {
 		// --- GAME LOOP ---
 		this.onUpdate.add(() => {
 			this.gController.update();
-			gRenderer.update();
+			this.gRenderer.update();
+
+			if (this.gController.isGameOver) {
+				if (this.restartBtn && !this.restartBtn.visible()) {
+					this.restartBtn.show();
+				}
+			}
 		});
+	}
+
+	private createRestartButton() {
+		this.restartBtn = new g.E({
+			scene: this,
+			x: g.game.width / 2,
+			y: g.game.height / 2 + 50,
+			width: 150,
+			height: 50,
+			anchorX: 0.5,
+			anchorY: 0.5,
+			touchable: true,
+			local: true
+		});
+
+		const bg = new g.FilledRect({
+			scene: this,
+			width: 150, height: 50,
+			cssColor: "#333333",
+			opacity: 0.8
+		});
+		this.restartBtn.append(bg);
+
+		const lbl = new g.Label({
+			scene: this,
+			text: "RESTART",
+			font: new g.DynamicFont({
+				game: g.game,
+				fontFamily: "sans-serif",
+				size: 24,
+				fontWeight: "bold"
+			}),
+			textColor: "white",
+			textAlign: "center",
+			width: 150,
+			anchorY: 0.5,
+			y: 25
+		});
+		this.restartBtn.append(lbl);
+
+		this.restartBtn.onPointDown.add(() => {
+			bg.cssColor = "#555555";
+			bg.modified();
+		});
+
+		this.restartBtn.onPointUp.add(async () => {
+			bg.cssColor = "#333333";
+			bg.modified();
+			try {
+				await this.client.request("restart", {});
+			} catch (e) {
+				console.error(e);
+			}
+		});
+
+		this.append(this.restartBtn);
+		this.restartBtn.hide();
 	}
 }

@@ -1,9 +1,11 @@
 export type eventNetworkRequestType =
 	"join_room" |
-	"destroy"
+	"destroy" |
+	"restart"
 export type eventNetworkRoadcastType =
 	"player_joined" |
-	"time_updated"
+	"time_updated" |
+	"restart_game"
 export function plainToClass<T>(ClassSymbol: new () => T, plainData: any): T {
 	const instance = new ClassSymbol();
 	if (plainData && typeof plainData === 'object') {

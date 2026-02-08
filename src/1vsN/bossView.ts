@@ -45,7 +45,8 @@ export class bossView {
 			fontSize: 30,
 			textColor: "black",
 			x: g.game.width / 2,
-			y: g.game.height / 2
+			y: g.game.height / 2,
+			local: true
 		});
 		this.hpLabel = new g.Label({
 			scene: scene,
@@ -73,17 +74,39 @@ export class bossView {
 		scene.append(this.container);
 	}
 
-	showBossWin() {
+	reset() {
+		this.endGameLabel.hide();
+		this.body.angle = 0;
+		this.body.modified();
+		this.update();
+	}
+
+	showGameEnd(winner: string) {
 		if (this.endGameLabel.visible()) return;
 
-		if (this.isSelf) {
-			this.endGameLabel.text = `TIME UP! You Survived!`;
-			this.endGameLabel.textColor = "blue";
+		let msg = "";
+		let color = "black";
+
+		if (winner === 'boss') {
+			if (this.isSelf) {
+				msg = "TIME UP! You Win!";
+				color = "blue";
+			} else {
+				msg = "TIME UP! Boss Wins!";
+				color = "red";
+			}
 		} else {
-			this.endGameLabel.text = `TIME UP! Boss Wins!`;
-			this.endGameLabel.textColor = "red";
+			if (this.isSelf) {
+				msg = "GAME OVER, You Defeated!";
+				color = "red";
+			} else {
+				msg = "Zombies Win!";
+				color = "blue";
+			}
 		}
 
+		this.endGameLabel.text = msg;
+		this.endGameLabel.textColor = color;
 		this.endGameLabel.y = -100;
 		this.endGameLabel.invalidate();
 		this.endGameLabel.show();
@@ -91,24 +114,6 @@ export class bossView {
 	}
 
 	update() {
-		if (this.model.isDead()) {
-			const hpText = `HP: ${Math.ceil(this.model.hp)}`;
-			this.hpLabel.text = this.isSelf ? `${hpText} (YOU)` : hpText;
-			this.hpLabel.textColor = this.isSelf ? "blue" : "black";
-			this.hpLabel.invalidate();
-			if (this.endGameLabel.visible()) return;
-			if (this.isSelf) {
-				this.endGameLabel.text = `GAME OVER, You are defeated!`;
-			} else {
-				this.endGameLabel.text = `Zombie win!`;
-			}
-			this.endGameLabel.y = -100;
-			this.endGameLabel.invalidate();
-			this.endGameLabel.show();
-			Helper.moveToAsync(this.endGameLabel, g.game.width / 2, g.game.height / 2 - 100, 500).then(() => { });
-			return;
-		}
-
 		this.body.angle = this.model.angle;
 
 		const hpText = `HP: ${Math.ceil(this.model.hp)}`;

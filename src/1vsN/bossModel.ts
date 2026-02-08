@@ -31,7 +31,7 @@ export class bossModel {
 		this.x = x;
 		this.y = y;
 		this.hp = hp;
-		//this.maxHp = hp;
+		this.maxHp = hp;
 
 		this.fireRate = Math.floor(g.game.fps * fireRateSeconds);
 
@@ -95,7 +95,7 @@ export class bossModel {
 	restore(data: BossData) {
 		this.id = data.id;
 		this.hp = data.hp;
-		this.maxHp = data.maxHp ?? data.hp;
+		this.maxHp = data.maxHp ?? data.hp; 
 		this.x = data.x;
 		this.y = data.y;
 		this.angle = data.angle;

@@ -4,6 +4,7 @@ import { gameController } from "../1vsN/gameController";
 export class serverScene extends g.Scene {
 	private idBoss: string;
 	private idOther: string[] = [];
+	private wasGameOver: boolean = false;
 
 	private gController: gameController;
 	private imgUrls = [
@@ -31,6 +32,17 @@ export class serverScene extends g.Scene {
 			console.log('CLIENT DESS');
 			return undefined;
 		});
+		server.onRpc("restart", (data, playerId) => {
+			console.log("Restart requested by", playerId);
+			if (this.gController) {
+				this.gController.reset();
+				this.wasGameOver = false;
+				server.broadcast("restart_game", {});
+				this.saveGameSnapshot("Game Restarted");
+			}
+			return true;
+		});
+
 		server.onRpc("join_room", (data, playerId) => {
 			console.log('----');
 			if (this.idOther.length == 3) {
@@ -75,6 +87,12 @@ export class serverScene extends g.Scene {
 
 	private onUpdateTick() {
 		this.gController.update();
+
+		// Check for Game Over transition to save immediate snapshot
+		if (this.gController.isGameOver && !this.wasGameOver) {
+			this.wasGameOver = true;
+			this.saveGameSnapshot("Game Over");
+		}
 	}
 
 	private saveGameSnapshot(reason: string) {

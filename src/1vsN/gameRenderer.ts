@@ -14,6 +14,8 @@ export class gameRenderer {
 	playerStatusMap: Map<string, g.Label>;
 	statsContainer: g.E;
 	timerLabel: g.Label;
+	timerBarBg: g.FilledRect;
+	timerBar: g.FilledRect;
 	font: g.Font;
 
 	constructor(scene: g.Scene, controller: gameController) {
@@ -32,18 +34,41 @@ export class gameRenderer {
 		this.statsContainer = new g.E({ scene: scene, x: 10, y: 10 });
 		scene.append(this.statsContainer);
 
+		// Timer Background
+		this.timerBarBg = new g.FilledRect({
+			scene: scene,
+			x: 10,
+			y: g.game.height - 30,
+			width: g.game.width - 20,
+			height: 20,
+			cssColor: "gray",
+			opacity: 0.5
+		});
+		scene.append(this.timerBarBg);
+
+		// Timer Bar
+		this.timerBar = new g.FilledRect({
+			scene: scene,
+			x: 10,
+			y: g.game.height - 30,
+			width: g.game.width - 20,
+			height: 20,
+			cssColor: "#00FF00"
+		});
+		scene.append(this.timerBar);
+
 		this.timerLabel = new g.Label({
 			scene: scene,
 			font: new g.DynamicFont({
 				game: g.game,
 				fontFamily: "monospace",
-				size: 20,
+				size: 18,
 				fontWeight: "bold"
 			}),
 			text: "",
 			textColor: "black",
-			x: 10,
-			y: g.game.height - 40
+			x: 15,
+			y: g.game.height - 50
 		});
 		scene.append(this.timerLabel);
 
@@ -55,12 +80,32 @@ export class gameRenderer {
 		}
 	}
 
+	reset() {
+		this.zombieMap.forEach(v => v.destroy());
+		this.zombieMap.clear();
+		this.bulletMap.forEach(v => v.destroy());
+		this.bulletMap.clear();
+		if (this.bossView) this.bossView.reset();
+	}
+
 	update() {
+		// Update Timer Bar
+		const maxW = g.game.width - 20;
+		const ratio = Math.max(0, this.controller.remainingTime / this.controller.maxTime);
+		this.timerBar.width = maxW * ratio;
+
+		// Change color based on remaining time
+		if (ratio < 0.2) this.timerBar.cssColor = "red";
+		else if (ratio < 0.5) this.timerBar.cssColor = "yellow";
+		else this.timerBar.cssColor = "#00FF00";
+
+		this.timerBar.modified();
+
 		if (this.bossView) {
 			this.bossView.update();
 
-			if (this.controller.remainingTime <= 0 && this.controller.boss && !this.controller.boss.isDead()) {
-				this.bossView.showBossWin();
+			if (this.controller.isGameOver) {
+				this.bossView.showGameEnd(this.controller.winner!);
 			}
 		}
 

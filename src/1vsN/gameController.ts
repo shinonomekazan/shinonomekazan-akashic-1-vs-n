@@ -8,6 +8,8 @@ export interface GameSnapshotData {
 	players: EnemyPlayerData[];
 	timestamp: number;
 	remainingTime: number;
+	isGameOver: boolean;
+	winner: string | null;
 }
 
 export class gameController {
@@ -18,6 +20,9 @@ export class gameController {
 	screenWidth: number;
 	screenHeight: number;
 	remainingTime: number;
+	maxTime: number;
+	isGameOver: boolean;
+	winner: string | null; // 'boss' | 'players'
 
 	constructor(bossPlayerId: string, screenWidth: number, screenHeight: number, selfId: string) {
 		this.bossPlayerId = bossPlayerId;
@@ -25,7 +30,10 @@ export class gameController {
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 		this.enemyPlayers = new Map();
-		this.remainingTime = 60;
+		this.maxTime = 60;
+		this.remainingTime = this.maxTime;
+		this.isGameOver = false;
+		this.winner = null;
 
 		this.boss = new bossModel(bossPlayerId, screenWidth / 2, screenHeight / 2, 100, 0.3);
 	}
@@ -33,7 +41,6 @@ export class gameController {
 	addPlayer(playerId: string, imgUrl: string) {
 		if (playerId === this.bossPlayerId) return;
 		if (!this.enemyPlayers.has(playerId)) {
-			console.log(`Enemy player ${playerId} joined`);
 			this.enemyPlayers.set(playerId, new enemyPlayerModel(playerId, imgUrl));
 		}
 	}
@@ -45,7 +52,7 @@ export class gameController {
 	}
 
 	handleInput(playerId: string, pointX: number, pointY: number) {
-		if (this.remainingTime <= 0) return;
+		if (this.isGameOver) return;
 
 		if (!this.boss || this.boss.isDead()) {
 			return;
@@ -65,14 +72,24 @@ export class gameController {
 	}
 
 	update() {
+		if (this.isGameOver) return;
 		if (!this.boss) return;
 
-		if (this.remainingTime > 0 && !this.boss.isDead()) {
+		// Check Time Up
+		if (this.remainingTime > 0) {
 			this.remainingTime -= 1 / g.game.fps;
-			if (this.remainingTime < 0) this.remainingTime = 0;
+			if (this.remainingTime <= 0) {
+				this.remainingTime = 0;
+				this.finishGame('boss');
+				return;
+			}
 		}
 
-		if (this.boss.isDead()) return;
+		// Check Boss Dead
+		if (this.boss.isDead()) {
+			this.finishGame('players');
+			return;
+		}
 
 		this.boss.updateBullets(this.screenWidth, this.screenHeight);
 
@@ -100,13 +117,41 @@ export class gameController {
 		});
 	}
 
+	finishGame(winner: string) {
+		this.isGameOver = true;
+		this.winner = winner;
+	}
+
+	reset() {
+		this.remainingTime = this.maxTime;
+		this.isGameOver = false;
+		this.winner = null;
+
+		if (this.boss) {
+			this.boss.hp = this.boss.maxHp;
+			this.boss.bullets = [];
+			this.boss.killCount = 0;
+			this.boss.x = this.screenWidth / 2;
+			this.boss.y = this.screenHeight / 2;
+			this.boss.angle = 0;
+		}
+
+		this.enemyPlayers.forEach(p => {
+			p.zombies = [];
+			p.spawnCount = 0;
+			p.lastSpawnAge = -p.spawnRate;
+		});
+	}
+
 	getSnapshot(): GameSnapshotData {
 		return {
 			bossPlayerId: this.bossPlayerId,
 			boss: this.boss ? this.boss.getData() : null,
 			players: Array.from(this.enemyPlayers.values()).map(p => p.getData()),
 			timestamp: g.game.age,
-			remainingTime: this.remainingTime
+			remainingTime: this.remainingTime,
+			isGameOver: this.isGameOver,
+			winner: this.winner
 		};
 	}
 
@@ -115,6 +160,8 @@ export class gameController {
 
 		this.bossPlayerId = snapshot.bossPlayerId;
 		this.remainingTime = snapshot.remainingTime;
+		this.isGameOver = snapshot.isGameOver;
+		this.winner = snapshot.winner;
 
 		if (snapshot.boss) {
 			if (!this.boss) {
