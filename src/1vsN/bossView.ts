@@ -55,7 +55,7 @@ export class bossView {
 			textColor: "black",
 			x: -20, y: -40
 		});
-		//this.container.append(this.gameOver);
+
 		this.container.append(this.hpLabel);
 		scene.append(this.endGameLabel);
 		this.endGameLabel.hide();
@@ -71,6 +71,23 @@ export class bossView {
 		this.container.append(this.killLabel);
 
 		scene.append(this.container);
+	}
+
+	showBossWin() {
+		if (this.endGameLabel.visible()) return;
+
+		if (this.isSelf) {
+			this.endGameLabel.text = `TIME UP! You Survived!`;
+			this.endGameLabel.textColor = "blue";
+		} else {
+			this.endGameLabel.text = `TIME UP! Boss Wins!`;
+			this.endGameLabel.textColor = "red";
+		}
+
+		this.endGameLabel.y = -100;
+		this.endGameLabel.invalidate();
+		this.endGameLabel.show();
+		Helper.moveToAsync(this.endGameLabel, g.game.width / 2, g.game.height / 2 - 100, 500).then(() => { });
 	}
 
 	update() {
@@ -91,9 +108,6 @@ export class bossView {
 			Helper.moveToAsync(this.endGameLabel, g.game.width / 2, g.game.height / 2 - 100, 500).then(() => { });
 			return;
 		}
-
-		//this.container.x = this.model.x;
-		//this.container.y = this.model.y;
 
 		this.body.angle = this.model.angle;
 

@@ -7,7 +7,7 @@ export class zombieView {
 
 	constructor(scene: g.Scene, model: zombieModel) {
 		this.model = model;
-		this.entity = Helper.newSprite(model.color);
+		this.entity = Helper.newSprite(model.urlImg);
 		this.entity.anchor(0.5, 0.5);
 		this.entity.scale(0.06);
 		scene.append(this.entity);

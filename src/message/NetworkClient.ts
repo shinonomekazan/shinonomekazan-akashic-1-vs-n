@@ -1,5 +1,5 @@
 import { NetworkMessage } from "./RPCMessage";
-import { eventNetworkRoadcastType } from "./eventNetwordType";
+import { eventNetworkRequestType, eventNetworkRoadcastType } from "./eventNetwordType";
 
 export class NetworkClient {
 	private pendingRequests: Map<string, { resolve: Function, reject: Function }> = new Map();
@@ -15,7 +15,7 @@ export class NetworkClient {
 	/**
 	 * RPC: Gửi yêu cầu và chờ kết quả (Request - Response)
 	 */
-	public request(type: string, payload: any = {}): Promise<any> {
+	public request(type: eventNetworkRequestType, payload: any = {}): Promise<any> {
 		return new Promise((resolve, reject) => {
 			const reqId = `${g.game.age}_${Math.floor(g.game.localRandom.generate() * 100000)}`;
 

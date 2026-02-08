@@ -1,3 +1,11 @@
+export interface BulletData {
+	x: number;
+	y: number;
+	dx: number;
+	dy: number;
+	speed: number;
+}
+
 export class bulletModel {
 	x: number;
 	y: number;
@@ -26,5 +34,15 @@ export class bulletModel {
 		if (this.x < 0 || this.x > screenWidth || this.y < 0 || this.y > screenHeight) {
 			this.isActive = false;
 		}
+	}
+
+	getData(): BulletData {
+		return {
+			x: this.x,
+			y: this.y,
+			dx: this.dx,
+			dy: this.dy,
+			speed: this.speed
+		};
 	}
 }

@@ -1,5 +1,17 @@
 import { bulletModel } from "./bulletModel";
 
+export interface BossData {
+	id: string;
+	hp: number;
+	maxHp: number;
+	x: number;
+	y: number;
+	angle: number;
+	killCount: number;
+	lastShotAge: number;
+	bullets: any[];
+}
+
 export class bossModel {
 	id: string;
 	hp: number;
@@ -19,7 +31,7 @@ export class bossModel {
 		this.x = x;
 		this.y = y;
 		this.hp = hp;
-		this.maxHp = hp;
+		//this.maxHp = hp;
 
 		this.fireRate = Math.floor(g.game.fps * fireRateSeconds);
 
@@ -63,5 +75,37 @@ export class bossModel {
 
 	isDead(): boolean {
 		return this.hp <= 0;
+	}
+
+	// --- Serialization ---
+	getData(): BossData {
+		return {
+			id: this.id,
+			hp: this.hp,
+			maxHp: this.maxHp,
+			x: this.x,
+			y: this.y,
+			angle: this.angle,
+			killCount: this.killCount,
+			lastShotAge: this.lastShotAge,
+			bullets: this.bullets.map(b => b.getData())
+		};
+	}
+
+	restore(data: BossData) {
+		this.id = data.id;
+		this.hp = data.hp;
+		this.maxHp = data.maxHp ?? data.hp;
+		this.x = data.x;
+		this.y = data.y;
+		this.angle = data.angle;
+		this.killCount = data.killCount;
+		this.lastShotAge = data.lastShotAge;
+		this.bullets = data.bullets.map(bData => {
+			const b = new bulletModel(bData.x, bData.y, 0, bData.speed);
+			b.dx = bData.dx;
+			b.dy = bData.dy;
+			return b;
+		});
 	}
 }

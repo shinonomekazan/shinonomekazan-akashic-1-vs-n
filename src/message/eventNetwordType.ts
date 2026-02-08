@@ -1,5 +1,6 @@
 export type eventNetworkRequestType =
-	"join_room"
+	"join_room" |
+	"destroy"
 export type eventNetworkRoadcastType =
 	"player_joined" |
 	"time_updated"

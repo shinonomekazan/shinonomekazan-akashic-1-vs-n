@@ -13,6 +13,7 @@ export class gameRenderer {
 	bulletMap: Map<bulletModel, bulletView>;
 	playerStatusMap: Map<string, g.Label>;
 	statsContainer: g.E;
+	timerLabel: g.Label;
 	font: g.Font;
 
 	constructor(scene: g.Scene, controller: gameController) {
@@ -31,10 +32,23 @@ export class gameRenderer {
 		this.statsContainer = new g.E({ scene: scene, x: 10, y: 10 });
 		scene.append(this.statsContainer);
 
+		this.timerLabel = new g.Label({
+			scene: scene,
+			font: new g.DynamicFont({
+				game: g.game,
+				fontFamily: "monospace",
+				size: 20,
+				fontWeight: "bold"
+			}),
+			text: "",
+			textColor: "black",
+			x: 10,
+			y: g.game.height - 40
+		});
+		scene.append(this.timerLabel);
+
 		if (controller.boss) {
-			// Kiểm tra xem Boss có phải là người chơi hiện tại (selfId) không
 			const isBossSelf = controller.bossPlayerId === controller.selfId;
-			// Truyền cờ isBossSelf vào View
 			this.bossView = new bossView(scene, controller.boss, this.font, isBossSelf);
 		} else {
 			this.bossView = null;
@@ -42,12 +56,23 @@ export class gameRenderer {
 	}
 
 	update() {
-		// 1. Update Boss View
 		if (this.bossView) {
 			this.bossView.update();
+
+			if (this.controller.remainingTime <= 0 && this.controller.boss && !this.controller.boss.isDead()) {
+				this.bossView.showBossWin();
+			}
 		}
 
-		// 2. Update Zombie Views
+		const timeLeft = Math.ceil(this.controller.remainingTime);
+		this.timerLabel.text = `TIME: ${timeLeft}`;
+		if (timeLeft <= 10) {
+			this.timerLabel.textColor = "red";
+		} else {
+			this.timerLabel.textColor = "black";
+		}
+		this.timerLabel.invalidate();
+
 		const activeZombies = new Set<zombieModel>();
 		this.controller.enemyPlayers.forEach(player => {
 			player.zombies.forEach(zombie => {
@@ -70,7 +95,6 @@ export class gameRenderer {
 			}
 		});
 
-		// 3. Update Bullet Views
 		const activeBullets = new Set<bulletModel>();
 		if (this.controller.boss) {
 			this.controller.boss.bullets.forEach(bullet => {
@@ -89,7 +113,6 @@ export class gameRenderer {
 			}
 		});
 
-		// 4. Update Player Status Labels
 		let yOffset = 0;
 		this.controller.enemyPlayers.forEach((player) => {
 			let label = this.playerStatusMap.get(player.id);
@@ -106,10 +129,8 @@ export class gameRenderer {
 				this.playerStatusMap.set(player.id, label);
 			}
 
-			// Kiểm tra xem đây có phải là bản thân không
 			const isSelf = player.id === this.controller.selfId;
 
-			// Format tên hiển thị
 			let nameDisplay = `P: ${player.id}`;
 			if (isSelf) {
 				nameDisplay += " (YOU)";
@@ -118,14 +139,11 @@ export class gameRenderer {
 			const cooldown = player.getCooldownRemaining();
 			const statusText = isSelf ? (cooldown > 0 ? `(Wait ${cooldown}s)` : `(Ready)`) : "";
 
-			// Nếu là bản thân thì highlight màu xanh, còn lại theo logic cooldown
 			let textColor = "black";
 			if (isSelf) {
 				if (cooldown > 0) textColor = "gray"
 				else textColor = "black";
 			}
-			//if (isSelf) textColor = "gray";
-			//else if (cooldown > 0) textColor = "black";
 
 			label.text = `${nameDisplay} | Zombies: ${player.spawnCount} ${statusText}`;
 			label.textColor = textColor;
