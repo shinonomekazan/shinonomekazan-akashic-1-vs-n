@@ -59,7 +59,6 @@ export class gameController {
 		}
 		if (playerId === this.bossPlayerId) {
 			this.boss.setAim(pointX, pointY);
-			this.boss.shoot();
 			return;
 		}
 		let newPoint = Helper.snapToScreenEdge(pointX, pointY);
@@ -75,7 +74,6 @@ export class gameController {
 		if (this.isGameOver) return;
 		if (!this.boss) return;
 
-		// Check Time Up
 		if (this.remainingTime > 0) {
 			this.remainingTime -= 1 / g.game.fps;
 			if (this.remainingTime <= 0) {
@@ -85,12 +83,12 @@ export class gameController {
 			}
 		}
 
-		// Check Boss Dead
 		if (this.boss.isDead()) {
 			this.finishGame('players');
 			return;
 		}
 
+		this.boss.shoot();
 		this.boss.updateBullets(this.screenWidth, this.screenHeight);
 
 		this.enemyPlayers.forEach(player => {
