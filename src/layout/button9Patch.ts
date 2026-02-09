@@ -35,7 +35,7 @@ export class button9Patch extends g.E {
 		this._highlightColor = params.highlightColor || "#CCCCCC";
 		this._onClickHandler = params.onClick;
 		this._padding = params.padding !== undefined ? params.padding : 10;
-		this._isDisabled = !!params.disabled; // [ADD] Khởi tạo giá trị
+		this._isDisabled = !!params.disabled;
 
 		// --- BACKGROUND ---
 		const srcSurface = g.SurfaceUtil.asSurface(params.backgroundImage);

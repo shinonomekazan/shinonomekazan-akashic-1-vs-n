@@ -3,6 +3,7 @@ import { gameController } from "../1vsN/gameController";
 import { gameRenderer } from "../1vsN/gameRenderer";
 import { NetworkClient } from "../message/NetworkClient";
 import { joinRoomData } from "../message/eventNetwordType";
+import { button9Patch } from "../layout/button9Patch";
 
 export interface MainSceneParameterObject extends g.SceneParameterObject {
 	snapshot?: any;
@@ -13,7 +14,7 @@ export class clientScene extends g.Scene {
 	private gController: gameController
 	private gRenderer: gameRenderer;
 	private client: NetworkClient;
-	private restartBtn: g.E;
+	private restartBtn: button9Patch;
 
 	private imgUrls = [
 		"/assets/zombies/zombie-green.png",
@@ -110,7 +111,8 @@ export class clientScene extends g.Scene {
 		// --- GAME LOOP ---
 		this.onUpdate.add(() => {
 			this.gController.update();
-			this.gRenderer.update();
+			
+			this.gRenderer.update(g.game.isSkipping);
 
 			if (this.gController.isGameOver) {
 				if (this.restartBtn && !this.restartBtn.visible()) {
@@ -121,58 +123,31 @@ export class clientScene extends g.Scene {
 	}
 
 	private createRestartButton() {
-		this.restartBtn = new g.E({
+		const bgImage = this.asset.getImage("/assets/background-button.png");
+		this.restartBtn = new button9Patch({
 			scene: this,
-			x: g.game.width / 2,
-			y: g.game.height / 2 + 50,
-			width: 150,
-			height: 50,
-			anchorX: 0.5,
-			anchorY: 0.5,
-			touchable: true,
-			local: true
-		});
-
-		const bg = new g.FilledRect({
-			scene: this,
-			width: 150, height: 50,
-			cssColor: "#333333",
-			opacity: 0.8
-		});
-		this.restartBtn.append(bg);
-
-		const lbl = new g.Label({
-			scene: this,
+			width: 200,
+			height: 68,
+			backgroundImage: bgImage,
+			sliceBorder: { top: 16, bottom: 16, left: 25, right: 55 },
 			text: "RESTART",
-			font: new g.DynamicFont({
-				game: g.game,
-				fontFamily: "sans-serif",
-				size: 24,
-				fontWeight: "bold"
-			}),
+			font: g.game.vars.font,
 			textColor: "white",
-			textAlign: "center",
-			width: 150,
-			anchorY: 0.5,
-			y: 25
-		});
-		this.restartBtn.append(lbl);
-
-		this.restartBtn.onPointDown.add(() => {
-			bg.cssColor = "#555555";
-			bg.modified();
-		});
-
-		this.restartBtn.onPointUp.add(async () => {
-			bg.cssColor = "#333333";
-			bg.modified();
-			try {
-				await this.client.request("restart", {});
-			} catch (e) {
-				console.error(e);
+			highlightColor: "#CCCCCC",
+			onClick: async () => {
+				try {
+					await this.client.request("restart", {});
+				} catch (e) {
+					console.error(e);
+				}
 			}
 		});
 
+		this.restartBtn.x = g.game.width / 2;
+		this.restartBtn.y = g.game.height / 2 + 50;
+		this.restartBtn.anchorX = 0.5;
+		this.restartBtn.anchorY = 0.5;
+		this.restartBtn.modified()
 		this.append(this.restartBtn);
 		this.restartBtn.hide();
 	}

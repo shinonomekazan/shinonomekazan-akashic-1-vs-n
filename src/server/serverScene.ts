@@ -23,7 +23,6 @@ export class serverScene extends g.Scene {
 		console.log('server scene loaded, RoomID: ', g.game.playId);
 		const server = new NetworkServer(this);
 		this.onPointDownCapture.add((ev) => {
-			console.log('SERVER ', ev.player.id);
 			const playerId = ev.player.id
 			this.gController.handleInput(playerId, ev.point.x, ev.point.y);
 		});
@@ -59,8 +58,10 @@ export class serverScene extends g.Scene {
 				this.idBoss = playerId;
 				this.gController = new gameController(playerId, g.game.width, g.game.height, "server_host");
 				this.setInterval(() => {
-					this.saveGameSnapshot("AutoSave 1 min");
-				}, 3000);
+					if (this.wasGameOver == false) {
+						this.saveGameSnapshot("AutoSave 10s");
+					}
+				}, 10000);
 				this.onUpdate.add(this.onUpdateTick, this);
 				this.gController.bossPlayerId = this.idBoss;
 				if (this.gController.boss) {
