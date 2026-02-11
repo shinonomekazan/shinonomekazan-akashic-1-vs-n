@@ -37,7 +37,9 @@ export class clientScene extends g.Scene {
 	}
 
 	private initScene() {
+		console.log('1 init');
 		this.client = new NetworkClient(this);
+		console.log('2 init');
 		if (this._initialSnapshot) {
 			console.log("Restoring game from snapshot...", this._initialSnapshot);
 			this.restoreFromSnapshot(this._initialSnapshot);
@@ -67,7 +69,7 @@ export class clientScene extends g.Scene {
 			if (this.gRenderer) this.gRenderer.reset();
 			if (this.restartBtn) this.restartBtn.hide();
 		});
-
+		console.log('3 init');
 		this.sendJoin();
 	}
 
@@ -75,13 +77,16 @@ export class clientScene extends g.Scene {
 		try {
 			let d = new joinRoomData();
 			d.clientSet("xxx " + g.game.selfId)
-			const result = await this.client.request("join_room", d);
+			console.log('1 send');
+			this.client.request("join_room", d);
+			console.log('2 send');
 		} catch (err) {
 			console.error("RPC error:", err);
 		}
 	}
 
 	private onGameLoad() {
+		console.log('gameload');
 		this.initScene();
 	}
 
@@ -111,7 +116,7 @@ export class clientScene extends g.Scene {
 		// --- GAME LOOP ---
 		this.onUpdate.add(() => {
 			this.gController.update();
-			
+
 			this.gRenderer.update(g.game.isSkipping);
 
 			if (this.gController.isGameOver) {
