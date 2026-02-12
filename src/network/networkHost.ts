@@ -1,9 +1,9 @@
-import { NetworkMessage } from "./RPCMessage";
+import { networkMessage } from "./RPCMessage";
 import { eventNetworkRequestType, eventNetworkRoadcastType } from "./eventNetworkType";
 
 type RequestHandler = (payload: any, playerId: string) => void;
 
-export class NetworkServer {
+export class networkHost {
 	private handlers: Map<string, RequestHandler> = new Map();
 
 	constructor(scene: g.Scene) {
@@ -15,7 +15,7 @@ export class NetworkServer {
 	}
 
 	public broadcast(eventName: eventNetworkRoadcastType, payload: any = {}): void {
-		const msg: NetworkMessage = { eventName, payload };
+		const msg: networkMessage = { eventName, payload };
 		g.game.raiseEvent(new g.MessageEvent(msg));
 	}
 
@@ -24,7 +24,7 @@ export class NetworkServer {
 	}
 
 	private handleRequest(e: g.MessageEvent): void {
-		const req = e.data as NetworkMessage;
+		const req = e.data as networkMessage;
 
 		if (!req || !req.type) return;
 

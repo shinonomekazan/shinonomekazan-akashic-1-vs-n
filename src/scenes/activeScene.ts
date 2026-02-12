@@ -1,11 +1,11 @@
-import { NetworkServer } from "../message/NetworkServer";
-import { joinRoomData, plainToClass } from "../message/eventNetworkType";
+import { networkHost } from "../network/networkHost";
+import { joinRoomData, plainToClass } from "../network/eventNetworkType";
 import { gameController } from "../1vsN/gameController";
 export class activeScene extends g.Scene {
 	private idBoss: string;
 	private idOther: string[] = [];
 	private wasGameOver: boolean = false;
-	private network: NetworkServer;
+	private networkHost: networkHost;
 	private gController: gameController;
 	private imgUrls = [
 		"/assets/zombies/zombie-green.png",
@@ -21,24 +21,24 @@ export class activeScene extends g.Scene {
 	private onGameLoad() {
 		console.clear();
 		console.log('active scene loaded, RoomID: ', g.game.playId);
-		this.network = new NetworkServer(this);
+		this.networkHost = new networkHost(this);
 		this.onPointDownCapture.add((ev) => {
 			const playerId = ev.player.id
 			this.gController.handleInput(playerId, ev.point.x, ev.point.y);
 		});
 
-		this.network.on("restart", (data, playerId) => {
+		this.networkHost.on("restart", (data, playerId) => {
 			console.log("Restart requested by", playerId);
 			if (this.gController) {
 				this.gController.reset();
 				this.wasGameOver = false;
-				this.network.broadcast("restart_game", {});
+				this.networkHost.broadcast("restart_game", {});
 				this.saveGameSnapshot("Game Restarted");
 			}
 			return true;
 		});
 
-		this.network.on("join_room", (data, playerId) => {
+		this.networkHost.on("join_room", (data, playerId) => {
 			console.log('----');
 			if (this.idOther.length == 3) {
 				console.log('limit player!');
@@ -81,7 +81,7 @@ export class activeScene extends g.Scene {
 		joinData.serverSet(playerId, this.idBoss, this.idOther, this.idOther.length - 1);
 		console.log(joinData);
 
-		this.network.broadcast("player_joined", joinData);
+		this.networkHost.broadcast("player_joined", joinData);
 		this.saveGameSnapshot(`Player ${playerId} joined`);
 	}
 

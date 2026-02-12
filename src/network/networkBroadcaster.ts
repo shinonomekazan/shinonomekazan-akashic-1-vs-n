@@ -1,7 +1,7 @@
-import { NetworkMessage } from "./RPCMessage";
+import { networkMessage } from "./RPCMessage";
 import { eventNetworkRequestType, eventNetworkRoadcastType } from "./eventNetworkType";
 
-export class NetworkClient {
+export class networkBroadcaster {
 	private eventTriggers: Map<string, g.Trigger<any>> = new Map();
 
 	constructor(scene: g.Scene) {
@@ -9,7 +9,7 @@ export class NetworkClient {
 	}
 
 	public send(type: eventNetworkRequestType, payload: any = {}): void {
-		const msg: NetworkMessage = { type, payload };
+		const msg: networkMessage = { type, payload };
 		g.game.raiseEvent(new g.MessageEvent(msg));
 	}
 
@@ -21,7 +21,7 @@ export class NetworkClient {
 	}
 
 	private handleIncomingMessage(e: g.MessageEvent): void {
-		const msg = e.data as NetworkMessage;
+		const msg = e.data as networkMessage;
 		if (!msg || !msg.eventName) return;
 
 		if (msg.payload && msg.payload.__targetId) {

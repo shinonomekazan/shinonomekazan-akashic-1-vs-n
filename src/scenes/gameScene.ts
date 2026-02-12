@@ -1,8 +1,8 @@
 import { assetPaths } from "../assetPaths";
 import { gameController } from "../1vsN/gameController";
 import { gameRenderer } from "../1vsN/gameRenderer";
-import { NetworkClient } from "../message/NetworkClient";
-import { joinRoomData } from "../message/eventNetworkType";
+import { networkBroadcaster } from "../network/networkBroadcaster";
+import { joinRoomData } from "../network/eventNetworkType";
 import { button9Patch } from "../layout/button9Patch";
 
 export interface MainSceneParameterObject extends g.SceneParameterObject {
@@ -13,7 +13,7 @@ export class gameScene extends g.Scene {
 	private _initialSnapshot: any;
 	private gController: gameController
 	private gRenderer: gameRenderer;
-	private client: NetworkClient;
+	private broadcaster: networkBroadcaster;
 	private restartBtn: button9Patch;
 
 	private imgUrls = [
@@ -38,14 +38,14 @@ export class gameScene extends g.Scene {
 
 	private initScene() {
 		console.log('1 init');
-		this.client = new NetworkClient(this);
+		this.broadcaster = new networkBroadcaster(this);
 		console.log('2 init');
 		if (this._initialSnapshot) {
 			console.log("Restoring game from snapshot...", this._initialSnapshot);
 			this.restoreFromSnapshot(this._initialSnapshot);
 		}
 
-		this.client.on("player_joined").add((data) => {
+		this.broadcaster.on("player_joined").add((data) => {
 			let jData = data as joinRoomData
 			console.log("new player: ", data, g.game.isSkipping);
 
@@ -64,7 +64,7 @@ export class gameScene extends g.Scene {
 			})
 		});
 
-		this.client.on("restart_game").add(() => {
+		this.broadcaster.on("restart_game").add(() => {
 			if (this.gController) this.gController.reset();
 			if (this.gRenderer) this.gRenderer.reset();
 			if (this.restartBtn) this.restartBtn.hide();
@@ -78,7 +78,7 @@ export class gameScene extends g.Scene {
 			let d = new joinRoomData();
 			d.clientSet("xxx " + g.game.selfId)
 			console.log('1 send');
-			this.client.send("join_room", d);
+			this.broadcaster.send("join_room", d);
 			console.log('2 send');
 		} catch (err) {
 			console.error("RPC error:", err);
@@ -141,7 +141,7 @@ export class gameScene extends g.Scene {
 			highlightColor: "#CCCCCC",
 			onClick: async () => {
 				try {
-					this.client.send("restart", {});
+					this.broadcaster.send("restart", {});
 				} catch (e) {
 					console.error(e);
 				}
