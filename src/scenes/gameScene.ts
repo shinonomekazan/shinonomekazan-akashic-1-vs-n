@@ -65,6 +65,7 @@ export class gameScene extends g.Scene {
 		});
 
 		this.broadcaster.on("restart_game").add(() => {
+			console.log('recive resatrat ', g.game.age);
 			if (this.gController) this.gController.reset();
 			if (this.gRenderer) this.gRenderer.reset();
 			if (this.restartBtn) this.restartBtn.hide();
@@ -141,6 +142,7 @@ export class gameScene extends g.Scene {
 			highlightColor: "#CCCCCC",
 			onClick: async () => {
 				try {
+					console.log('RESTART ', g.game.age);
 					this.broadcaster.send("restart", {});
 				} catch (e) {
 					console.error(e);
