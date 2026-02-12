@@ -17,20 +17,25 @@ async function main(param: g.GameMainParameterObject): Promise<void> {
 		size: 60,
 		fontWeight: "bold",
 	});
+	console.clear();
+	console.log('main scene, id: ', g.game.selfId, ', isActive: ', g.game.isActiveInstance());
 
 	let scene: g.Scene;
 	if (g.game.isActiveInstance()) {
+		console.log('add active scene');
 		scene = new activeScene({
 			game: g.game,
 			name: "active scene",
 		});
 	} else {
+		console.log('add game scene');
 		scene = new gameScene({
 			game: g.game,
 			name: "game scene",
 			snapshot: param.snapshot
 		});
 	}
+	console.log('pushscene ', scene.name);
 	g.game.pushScene(scene);
 }
 export = main;

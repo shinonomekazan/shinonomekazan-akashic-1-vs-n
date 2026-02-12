@@ -19,7 +19,6 @@ export class activeScene extends g.Scene {
 	}
 
 	private onGameLoad() {
-		console.clear();
 		console.log('active scene loaded, RoomID: ', g.game.playId);
 		this.networkHost = new networkHost(this);
 		this.onPointDownCapture.add((ev) => {

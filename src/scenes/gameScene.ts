@@ -22,7 +22,6 @@ export class gameScene extends g.Scene {
 		"/assets/zombies/zombie-yellow.png",
 	]
 	constructor(param: MainSceneParameterObject) {
-		console.clear();
 		param.assetPaths = assetPaths;
 		super(param);
 		this._initialSnapshot = param.snapshot;
