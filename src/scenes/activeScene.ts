@@ -50,7 +50,7 @@ export class activeScene extends g.Scene {
 	}
 	private joinRoom(joinData: joinRoomData, playerId: string) {
 		if (this.idOther.includes(playerId)) {
-			console.log('alreay ', playerId);
+			console.log('ID already exists, skipping, id = ', playerId);
 			return;
 		}
 		console.log(`${playerId} joined with name: ${joinData.name}`);

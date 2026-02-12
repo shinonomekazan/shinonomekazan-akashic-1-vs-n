@@ -28,17 +28,15 @@ export class gameScene extends g.Scene {
 
 		this.onStateChange.add(e => {
 			if (e == 'before-destroyed') {
-				console.log('DES');
+				console.log(this.name, ' destroyed');
 			}
 		});
 
 		this.onLoad.add(this.onGameLoad, this);
 	}
 
-	private initScene() {
-		console.log('1 init');
+	private onGameLoad() {
 		this.broadcaster = new networkBroadcaster(this);
-		console.log('2 init');
 		if (this._initialSnapshot) {
 			console.log("Restoring game from snapshot...", this._initialSnapshot);
 			this.restoreFromSnapshot(this._initialSnapshot);
@@ -47,7 +45,6 @@ export class gameScene extends g.Scene {
 		this.broadcaster.on("player_joined").add((data) => {
 			let jData = data as joinRoomData
 			console.log("new player: ", data, g.game.isSkipping);
-
 			if (!this.gController) {
 				this.createController(jData.bossId);
 			} else {
@@ -64,30 +61,18 @@ export class gameScene extends g.Scene {
 		});
 
 		this.broadcaster.on("restart_game").add(() => {
-			console.log('recive resatrat ', g.game.age);
+			console.log('recive restart ', g.game.age);
 			if (this.gController) this.gController.reset();
 			if (this.gRenderer) this.gRenderer.reset();
 			if (this.restartBtn) this.restartBtn.hide();
 		});
-		console.log('3 init');
 		this.sendJoin();
 	}
 
 	private sendJoin() {
-		try {
-			let d = new joinRoomData();
-			d.clientSet("xxx " + g.game.selfId)
-			console.log('1 send');
-			this.broadcaster.send("join_room", d);
-			console.log('2 send');
-		} catch (err) {
-			console.error("RPC error:", err);
-		}
-	}
-
-	private onGameLoad() {
-		console.log('gameload');
-		this.initScene();
+		let d = new joinRoomData();
+		d.clientSet("xxx " + g.game.selfId)
+		this.broadcaster.send("join_room", d);
 	}
 
 	private restoreFromSnapshot(snapshot: any) {
@@ -106,7 +91,6 @@ export class gameScene extends g.Scene {
 		this.createRestartButton();
 
 		this.onPointDownCapture.add((ev) => {
-			// Ignore if clicking restart button
 			if (this.restartBtn && this.restartBtn.visible()) return;
 
 			const playerId = ev.player.id
