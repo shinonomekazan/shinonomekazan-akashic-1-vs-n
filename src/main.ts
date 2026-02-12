@@ -1,9 +1,7 @@
-import { clientScene } from "./client/clientScene";
-import { FlowManager } from "./flow/flowManager";
-import { serverScene } from "./server/serverScene";
+import { gameScene } from "./scenes/gameScene";
+import { activeScene } from "./scenes/activeScene";
 
 declare global {
-	var flowManager: FlowManager;
 	var gameLayer: g.E;
 	var debugLayer: g.E;
 	var debugMode: boolean;
@@ -20,27 +18,16 @@ async function main(param: g.GameMainParameterObject): Promise<void> {
 		fontWeight: "bold",
 	});
 
-	//let testScene = new TestLobbyScene({
-	//	game: g.game,
-	//	name: "testscene",
-	//});
-	//g.game.pushScene(testScene);
-
-	//let lobbySync = new lobbySyncClientTest({
-	//	game: g.game,
-	//	name: "lobbySync",
-	//});
-	//g.game.pushScene(lobbySync);
 	let scene: g.Scene;
 	if (g.game.isActiveInstance()) {
-		scene = new serverScene({
+		scene = new activeScene({
 			game: g.game,
-			name: "server scene",
+			name: "active scene",
 		});
 	} else {
-		scene = new clientScene({
+		scene = new gameScene({
 			game: g.game,
-			name: "client scene",
+			name: "game scene",
 			snapshot: param.snapshot
 		});
 	}

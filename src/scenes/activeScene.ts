@@ -1,11 +1,11 @@
 import { NetworkServer } from "../message/NetworkServer";
-import { joinRoomData, plainToClass } from "../message/eventNetwordType";
+import { joinRoomData, plainToClass } from "../message/eventNetworkType";
 import { gameController } from "../1vsN/gameController";
-export class serverScene extends g.Scene {
+export class activeScene extends g.Scene {
 	private idBoss: string;
 	private idOther: string[] = [];
 	private wasGameOver: boolean = false;
-	private server: NetworkServer;
+	private network: NetworkServer;
 	private gController: gameController;
 	private imgUrls = [
 		"/assets/zombies/zombie-green.png",
@@ -20,29 +20,25 @@ export class serverScene extends g.Scene {
 
 	private onGameLoad() {
 		console.clear();
-		console.log('server scene loaded, RoomID: ', g.game.playId);
-		this.server = new NetworkServer(this);
+		console.log('active scene loaded, RoomID: ', g.game.playId);
+		this.network = new NetworkServer(this);
 		this.onPointDownCapture.add((ev) => {
 			const playerId = ev.player.id
 			this.gController.handleInput(playerId, ev.point.x, ev.point.y);
 		});
 
-		this.server.onRpc("destroy", (data, playerId) => {
-			console.log('CLIENT DESS');
-			return undefined;
-		});
-		this.server.onRpc("restart", (data, playerId) => {
+		this.network.on("restart", (data, playerId) => {
 			console.log("Restart requested by", playerId);
 			if (this.gController) {
 				this.gController.reset();
 				this.wasGameOver = false;
-				this.server.broadcast("restart_game", {});
+				this.network.broadcast("restart_game", {});
 				this.saveGameSnapshot("Game Restarted");
 			}
 			return true;
 		});
 
-		this.server.onRpc("join_room", (data, playerId) => {
+		this.network.on("join_room", (data, playerId) => {
 			console.log('----');
 			if (this.idOther.length == 3) {
 				console.log('limit player!');
@@ -85,14 +81,12 @@ export class serverScene extends g.Scene {
 		joinData.serverSet(playerId, this.idBoss, this.idOther, this.idOther.length - 1);
 		console.log(joinData);
 
-		this.server.broadcast("player_joined", joinData);
+		this.network.broadcast("player_joined", joinData);
 		this.saveGameSnapshot(`Player ${playerId} joined`);
 	}
 
 	private onUpdateTick() {
 		this.gController.update();
-
-		// Check for Game Over transition to save immediate snapshot
 		if (this.gController.isGameOver && !this.wasGameOver) {
 			this.wasGameOver = true;
 			this.saveGameSnapshot("Game Over");

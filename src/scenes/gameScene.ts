@@ -2,14 +2,14 @@ import { assetPaths } from "../assetPaths";
 import { gameController } from "../1vsN/gameController";
 import { gameRenderer } from "../1vsN/gameRenderer";
 import { NetworkClient } from "../message/NetworkClient";
-import { joinRoomData } from "../message/eventNetwordType";
+import { joinRoomData } from "../message/eventNetworkType";
 import { button9Patch } from "../layout/button9Patch";
 
 export interface MainSceneParameterObject extends g.SceneParameterObject {
 	snapshot?: any;
 }
 
-export class clientScene extends g.Scene {
+export class gameScene extends g.Scene {
 	private _initialSnapshot: any;
 	private gController: gameController
 	private gRenderer: gameRenderer;
@@ -73,12 +73,12 @@ export class clientScene extends g.Scene {
 		this.sendJoin();
 	}
 
-	private async sendJoin() {
+	private sendJoin() {
 		try {
 			let d = new joinRoomData();
 			d.clientSet("xxx " + g.game.selfId)
 			console.log('1 send');
-			this.client.request("join_room", d);
+			this.client.send("join_room", d);
 			console.log('2 send');
 		} catch (err) {
 			console.error("RPC error:", err);
@@ -141,7 +141,7 @@ export class clientScene extends g.Scene {
 			highlightColor: "#CCCCCC",
 			onClick: async () => {
 				try {
-					await this.client.request("restart", {});
+					this.client.send("restart", {});
 				} catch (e) {
 					console.error(e);
 				}
